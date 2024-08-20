@@ -1,13 +1,16 @@
 package syslog
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/InfluxCommunity/influxdb3-go/influxdb3"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/mcuadros/go-syslog.v2"
 )
 
 func startSyslogServer(listenUDP string) (syslog.LogPartsChannel, *syslog.Server) {
+
 	channel := make(syslog.LogPartsChannel)
 	handler := syslog.NewChannelHandler(channel)
 
@@ -20,14 +23,31 @@ func startSyslogServer(listenUDP string) (syslog.LogPartsChannel, *syslog.Server
 }
 
 // MetricsListener is a function to handle syslog metrics and send them to InfluxDB
-func MetricsListener(listenUDP string, influxAddress string) {
+func MetricsListener(listenUDP string, influxHost string, influxToken string, influxDb string) {
 	channel, server := startSyslogServer(listenUDP)
+
+	client, err := influxdb3.New(influxdb3.ClientConfig{
+		Host:     influxHost,
+		Token:    influxToken,
+		Database: influxDb,
+	})
+
+	if err != nil {
+		log.Panic().Msg("Error creating InfluxDB client: " + err.Error())
+	}
+
+	defer func(client *influxdb3.Client) {
+		err := client.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(client)
 
 	go func(channel syslog.LogPartsChannel) {
 		for logParts := range channel {
 			log.Trace().Msg(fmt.Sprintf("%v", logParts))
 
-			sentToInflux(influxAddress, processTimestamps(logParts["message"].(string)))
+			sentToInflux(processTimestamps(logParts["message"].(string)), client)
 		}
 	}(channel)
 
@@ -42,8 +62,14 @@ func processTimestamps(message string) (result string) {
 	return message
 }
 
-func sentToInflux(influxAddress string, message string) (result bool, err error) {
+func sentToInflux(message string, client *influxdb3.Client) (result bool, err error) {
 	// Dummy function
-	log.Trace().Msg("Sending to " + influxAddress + ": " + message)
+	line := "cpu_usage v=17i 1724132844"
+	err = client.Write(context.Background(), []byte(line))
+	if err != nil {
+		log.Panic().Msg("Error sending to InfluxDB: " + err.Error())
+	}
+
+	log.Trace().Msg("Sending to InfluxDB: " + message)
 	return false, nil
 }
