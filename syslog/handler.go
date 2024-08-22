@@ -3,6 +3,9 @@ package syslog
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/InfluxCommunity/influxdb3-go/influxdb3"
 	"github.com/rs/zerolog/log"
@@ -22,7 +25,7 @@ func startSyslogServer(listenUDP string) (syslog.LogPartsChannel, *syslog.Server
 	return channel, server
 }
 
-// MetricsListener is a function to handle syslog metrics and send them to InfluxDB
+// MetricsListener is a function to handle syslog metrics and send them to InfluxDB v3
 func MetricsListener(listenUDP string, influxHost string, influxToken string, influxDb string) {
 	channel, server := startSyslogServer(listenUDP)
 
@@ -56,16 +59,20 @@ func MetricsListener(listenUDP string, influxHost string, influxToken string, in
 }
 
 func processTimestamps(message string) (result string) {
-	// Dummy function
+	splitted := strings.Split(message, " ")
+	delta, err := strconv.ParseInt(splitted[len(splitted)], 10, 64)
+	if err != nil {
+		log.Error().Msg("Error parsing timestamp: " + err.Error())
+	}
+
+	splitted[len(splitted)] = strconv.FormatInt(time.Now().Unix()+delta, 10)
 	log.Trace().Msg("Processing timestamps for " + message)
 	metricsHandlerTotal.Inc()
 	return message
 }
 
 func sentToInflux(message string, client *influxdb3.Client) (result bool, err error) {
-	// Dummy function
-	line := "cpu_usage v=17i 1724132844"
-	err = client.Write(context.Background(), []byte(line))
+	err = client.Write(context.Background(), []byte(message))
 	if err != nil {
 		log.Panic().Msg("Error sending to InfluxDB: " + err.Error())
 	}
