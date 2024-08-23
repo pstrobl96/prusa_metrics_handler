@@ -4,6 +4,7 @@ go 1.22.6
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
+	github.com/influxdata/influxdb-client-go/v2 v2.14.0
 	github.com/prometheus/client_golang v1.20.1
 	github.com/rs/zerolog v1.33.0
 	gopkg.in/mcuadros/go-syslog.v2 v2.3.0
@@ -15,7 +16,6 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/google/uuid v1.3.1 // indirect
-	github.com/influxdata/influxdb-client-go/v2 v2.14.0 // indirect
 	github.com/influxdata/line-protocol v0.0.0-20200327222509-2487e7298839 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/kr/text v0.2.0 // indirect
