@@ -1,6 +1,6 @@
 module pstrobl96/prusa_metrics_handler
 
-go 1.22.6
+go 1.23.3
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
