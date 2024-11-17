@@ -36,8 +36,6 @@ func process(data format.LogParts, received time.Time) {
 		return
 	}
 	log.Debug().Msg(fmt.Sprintf("Processing timestamp %d", timestamp))
-	//started := time.Unix(timestamp/1000000000, 0)
-	//log.Info().Msg(fmt.Sprintf("STARTED %s", started))
 	log.Debug().Msg(fmt.Sprintf("Processing data for printer %s", mac))
 }
 
@@ -69,12 +67,12 @@ func processTimestamp(data format.LogParts, received time.Time) (string, int64, 
 	defer state.mu.Unlock()
 
 	if state.FirstTimestamp == 0 || state.LastDelta > timedelta {
-		fmt.Println("First timestamp")
+		log.Debug().Msg("First timestamp recorded for printer " + mac)
 		state.FirstTimestamp = received.Add(-time.Duration(timedelta)).UnixNano()
 		timestamp = received.Add(-time.Duration(timedelta)).UnixNano()
 		state.LastDelta = timedelta
 	} else {
-		fmt.Println("Not first timestamp")
+		log.Debug().Msg("Not the timestamp recorded for printer " + mac)
 		state.LastDelta = timedelta
 	}
 	return mac, timestamp, nil
