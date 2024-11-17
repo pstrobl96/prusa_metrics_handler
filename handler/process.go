@@ -46,8 +46,14 @@ func processTimestamp(data format.LogParts, received time.Time) (string, int64, 
 	if !ok {
 		return "", 0, fmt.Errorf("mac is not an string")
 	}
+
+	message, ok := data["message"].(string)
+	if !ok {
+		return "", 0, fmt.Errorf("message is not an string")
+	}
+
 	re := regexp.MustCompile(`tm=(\d+)`)
-	matches := re.FindAllStringSubmatch(data["message"].(string), -1)
+	matches := re.FindAllStringSubmatch(message, -1)
 
 	for _, match := range matches {
 		if len(match) < 1 {
