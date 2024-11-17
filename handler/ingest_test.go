@@ -40,7 +40,7 @@ func TestMetricsListener(t *testing.T) {
 	}
 	defer conn.Close()
 
-	message := "<34>1 2023-10-10T14:48:00Z mymachine.example.com su - ID47 - BOM'su root' failed for lonvick on /dev/pts/8"
+	message := "msg=171517,tm=89113718519,v=4 heap free=69432i,total=91164i -42"
 	_, err = conn.Write([]byte(message))
 	if err != nil {
 		t.Fatalf("Failed to send syslog message: %v", err)

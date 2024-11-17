@@ -37,7 +37,13 @@ func process(data format.LogParts, received time.Time) {
 		return
 	}
 	log.Debug().Msg(fmt.Sprintf("Processing data for printer %s with timestamp %d", mac, timestamp))
-	processMessage(data["message"].(string), timestamp)
+	metrics, err := processMessage(data["message"].(string), timestamp)
+	if err != nil {
+		log.Error().Msg(fmt.Sprintf("Error processing message: %v", err))
+		return
+	}
+
+	sentToInflux(metrics, writeAPI)
 }
 
 // processTimestamp returns the MAC address and timestamp from the ingested data
@@ -111,7 +117,6 @@ func processMessage(message string, timestamp int64) ([]string, error) {
 		splitted[len(splitted)-1] = strconv.FormatInt(timestamp+delta, 10)
 		log.Debug().Msg("Processing timestamps for " + message)
 		messageSplit[i] = strings.Join(splitted, " ")
-		fmt.Println(messageSplit[i])
 	}
 
 	return messageSplit, nil

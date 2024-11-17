@@ -3,8 +3,14 @@ package handler
 import (
 	"context"
 
-	"github.com/influxdata/influxdb-client-go/api"
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/rs/zerolog/log"
+)
+
+var (
+	client   influxdb2.Client
+	writeAPI api.WriteAPIBlocking
 )
 
 func sentToInflux(message []string, writeAPI api.WriteAPIBlocking) (result bool, err error) {

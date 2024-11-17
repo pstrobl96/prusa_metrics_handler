@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/influxdata/influxdb-client-go/api"
+	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,12 +13,21 @@ type mockWriteAPI struct {
 	writeRecordFunc func(ctx context.Context, line string) error
 }
 
+func (m *mockWriteAPI) EnableBatching() {
+	// Mock implementation
+}
+
 func (m *mockWriteAPI) WriteRecord(ctx context.Context, lines ...string) error {
 	for _, line := range lines {
 		if err := m.writeRecordFunc(ctx, line); err != nil {
 			return err
 		}
 	}
+	return nil
+}
+
+func (m *mockWriteAPI) Flush(ctx context.Context) error {
+	// Mock implementation
 	return nil
 }
 
