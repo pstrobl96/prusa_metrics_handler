@@ -89,8 +89,17 @@ func processTimestamp(data format.LogParts, received time.Time) (string, int64, 
 func processMessage(message string, timestamp int64) ([]string, error) {
 	messageSplit := strings.Split(message, "\n")
 
-	// leaving first message for later :shrug:
-	messageSplit = messageSplit[1:]
+	if len(messageSplit) == 0 {
+		return nil, fmt.Errorf("message is empty")
+	}
+
+	firstMessage, err := parseFirstMessage(messageSplit[0])
+
+	if err != nil {
+		return nil, fmt.Errorf("error parsing first message: %v", err)
+	}
+
+	messageSplit = append(messageSplit[1:], firstMessage)
 
 	for i, line := range messageSplit {
 		splitted := strings.Split(line, " ")
@@ -102,7 +111,17 @@ func processMessage(message string, timestamp int64) ([]string, error) {
 		splitted[len(splitted)-1] = strconv.FormatInt(timestamp+delta, 10)
 		log.Debug().Msg("Processing timestamps for " + message)
 		messageSplit[i] = strings.Join(splitted, " ")
+		fmt.Println(messageSplit[i])
 	}
 
 	return messageSplit, nil
+}
+
+func parseFirstMessage(message string) (string, error) {
+	splitted := strings.Split(message, " ")
+	if len(splitted) == 0 {
+		return "", fmt.Errorf("splitted message is empty")
+	}
+	firstMsg := splitted[1:]
+	return strings.Join(firstMsg, " "), nil
 }
