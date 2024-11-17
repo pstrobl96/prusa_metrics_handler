@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"pstrobl96/prusa_metrics_handler/prometheus"
 	"regexp"
 	"strconv"
 	"strings"
@@ -118,7 +119,7 @@ func processMessage(message string, timestamp int64) ([]string, error) {
 		log.Debug().Msg("Processing timestamps for " + message)
 		messageSplit[i] = strings.Join(splitted, " ")
 	}
-
+	prometheus.MetricsHandlerTotal.Inc()
 	return messageSplit, nil
 }
 

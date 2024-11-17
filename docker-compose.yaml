@@ -18,7 +18,7 @@ services:
       - "--influx-bucket=prusa"
       - "--influx-token=EEKpryGZk8pVDXmIuy484BKUxM5jOEDv7YNoeNZUbsNbpbPbP6kK_qY9Zsyw7zNnlZ7pHG16FYzNaqwLMBUz8g=="
     ports:
-      - 10011:10011
+      - 10011:10011 # prometheus metrics
       - 8514:8514/udp
     networks:
       - prusa
