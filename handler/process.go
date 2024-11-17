@@ -15,7 +15,7 @@ import (
 type PrinterStatus struct {
 	FirstTimestamp int64
 	LastDelta      int64
-	mu             sync.Mutex
+	mutex          sync.Mutex
 }
 
 var printerStates sync.Map
@@ -69,8 +69,8 @@ func processTimestamp(data format.LogParts, received time.Time) (string, int64, 
 	timestamp := time.Now().UnixNano()
 	printerInterface, _ := printerStates.LoadOrStore(mac, &PrinterStatus{})
 	state := printerInterface.(*PrinterStatus)
-	state.mu.Lock()
-	defer state.mu.Unlock()
+	state.mutex.Lock()
+	defer state.mutex.Unlock()
 
 	if state.FirstTimestamp == 0 || state.LastDelta > timedelta {
 		log.Debug().Msg("First timestamp recorded for printer " + mac)
