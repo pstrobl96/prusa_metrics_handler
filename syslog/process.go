@@ -68,15 +68,13 @@ func processTimestamp(data format.LogParts, received time.Time) (string, int64, 
 	state.mu.Lock()
 	defer state.mu.Unlock()
 
-	// Handle the case when the printer is restarted.
-	// This is not ideal as in rare cases the value can be the same,
-	// and then it will not work correctly. At the moment, it's better than nothing.
-
-	if state.FirstTimestamp == 0 {
+	if state.FirstTimestamp == 0 || state.LastDelta > timedelta {
+		fmt.Println("First timestamp")
 		state.FirstTimestamp = received.Add(-time.Duration(timedelta)).UnixNano()
 		timestamp = received.Add(-time.Duration(timedelta)).UnixNano()
 		state.LastDelta = timedelta
 	} else {
+		fmt.Println("Not first timestamp")
 		state.LastDelta = timedelta
 	}
 	return mac, timestamp, nil
