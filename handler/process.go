@@ -35,8 +35,8 @@ func process(data format.LogParts, received time.Time) {
 		log.Error().Msg(fmt.Sprintf("Error processing timestamp: %v", err))
 		return
 	}
-	log.Debug().Msg(fmt.Sprintf("Processing timestamp %d", timestamp))
-	log.Debug().Msg(fmt.Sprintf("Processing data for printer %s", mac))
+	log.Info().Msg(fmt.Sprintf("Processing data for printer %s with timestamp %d", mac, timestamp))
+	//processMessage(data, timestamp)
 }
 
 // processTimestamp returns the MAC address and timestamp from the ingested data
@@ -74,6 +74,7 @@ func processTimestamp(data format.LogParts, received time.Time) (string, int64, 
 	} else {
 		log.Debug().Msg("Not the timestamp recorded for printer " + mac)
 		state.LastDelta = timedelta
+		return mac, state.FirstTimestamp, nil
 	}
 	return mac, timestamp, nil
 }
