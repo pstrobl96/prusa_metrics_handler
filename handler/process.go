@@ -36,7 +36,7 @@ func process(data format.LogParts, received time.Time) {
 		return
 	}
 	log.Info().Msg(fmt.Sprintf("Processing data for printer %s with timestamp %d", mac, timestamp))
-	//processMessage(data, timestamp)
+	processMessage(data, timestamp)
 }
 
 // processTimestamp returns the MAC address and timestamp from the ingested data
@@ -77,4 +77,13 @@ func processTimestamp(data format.LogParts, received time.Time) (string, int64, 
 		return mac, state.FirstTimestamp, nil
 	}
 	return mac, timestamp, nil
+}
+
+func processMessage(data format.LogParts, timestamp int64) ([]string, error) {
+	message, ok := data["message"].(string)
+	if !ok {
+		return nil, fmt.Errorf("message is not a string")
+	}
+	messageSplit := []string{message}
+	return messageSplit, nil
 }
