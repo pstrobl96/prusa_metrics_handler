@@ -2,9 +2,8 @@ package cmd
 
 import (
 	"net/http"
+	"pstrobl96/prusa_metrics_handler/handler"
 	"strconv"
-
-	"pstrobl96/prusa_metrics_handler/syslog"
 
 	"github.com/alecthomas/kingpin/v2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -37,7 +36,7 @@ func Run() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixNano
 
 	log.Info().Msg("Syslog logs server starting at: " + *syslogListenAddress)
-	go syslog.MetricsListener(*syslogListenAddress, *influxURL, *influxToken, *influxBucket, *influxOrg)
+	go handler.MetricsListener(*syslogListenAddress, *influxURL, *influxToken, *influxBucket, *influxOrg)
 
 	http.Handle(*metricsPath, promhttp.Handler())
 	http.ListenAndServe(":"+strconv.Itoa(*metricsPort), nil)

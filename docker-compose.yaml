@@ -18,7 +18,7 @@ services:
       - "--influx-bucket=prusa"
       - "--influx-token=EEKpryGZk8pVDXmIuy484BKUxM5jOEDv7YNoeNZUbsNbpbPbP6kK_qY9Zsyw7zNnlZ7pHG16FYzNaqwLMBUz8g=="
     ports:
-      - 10011:10011
+      - 10011:10011 # prometheus metrics
       - 8514:8514/udp
     networks:
       - prusa
@@ -48,7 +48,7 @@ services:
       - prusa_metrics_handler
 
   grafana:
-    image: grafana/grafana:11.1.4
+    image: grafana/grafana:11.3.0
     container_name: grafana
     restart: unless-stopped
     depends_on:
@@ -58,5 +58,5 @@ services:
     networks:
       - prusa
     volumes:
-      - ./docker-grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./docs/config/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - grafana_data:/var/lib/grafana

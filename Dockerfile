@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.22-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
@@ -16,7 +16,5 @@ RUN go build -v -o /prusa_metrics_handler
 FROM alpine:latest
 
 COPY --from=builder /prusa_metrics_handler .
-
-EXPOSE 10011
 
 ENTRYPOINT ["/prusa_metrics_handler"]
