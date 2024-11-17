@@ -16,7 +16,7 @@ import (
 type PrinterStatus struct {
 	FirstTimestamp int64
 	LastDelta      int64
-	mutex          sync.Mutex
+	mutex          sync.Mutex // mutex because Mutex is sync.Mutex
 }
 
 var printerStates sync.Map
