@@ -55,14 +55,14 @@ services:
       - prusa
 
   prusa_metrics_handler:
-    build: .
+    image: pubeldev/prusa_metrics_handler:v0.1.0
     container_name: prusa_metrics_handler
     restart: unless-stopped
     command: 
       - "--influx-url=http://influxproxy:8007"
       - "--influx-org=pubeldev"
       - "--influx-bucket=prusa"
-      - "--influx-token=EEKpryGZk8pVDXmIuy484BKUxM5jOEDv7YNoeNZUbsNbpbPbP6kK_qY9Zsyw7zNnlZ7pHG16FYzNaqwLMBUz8g=="
+      - "--influx-token=null"
     ports:
       - 10011:10011 # prometheus metrics
       - 8514:8514/udp

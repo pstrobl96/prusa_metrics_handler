@@ -4,9 +4,21 @@ This is simple utility, that takes metrics from printer, corrects timestamp and 
 
 Prusa 3D printers that are based on STM32 CPUs are unable to handle timestamp properly - they use delta timestamp - and you have to process them somewhere else.
 
-If you want to send metrics into metrics processor then just run gcode bellow at your printer. Don't forget change the IP address to yours.
+If you want to send metrics into metrics processor then just run gcode bellow at your printer. Don't forget change the IP address to yours. And if you are running 6.2.0 firmware you don't have to run the gcode and can update variables straight in the firmware.
 
 Details can be found in [Prusa_Firmware_Buddy](https://github.com/prusa3d/Prusa-Firmware-Buddy/blob/master/doc/metrics.md) repository.
+
+## How to run
+
+`sudo docker compose -f docker-compose.mimir.yaml up`
+
+`./prusa_metrics_handler --influx-url=http://influxdb:8086 --influx-org=pubeldev --influx-bucket=prusa --influx-token=yourtoken`
+
+No config file is needed for handler, everything is handled with flags.
+
+---
+
+`config.gcode`
 
 ```
 M330 SYSLOG
