@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -35,8 +36,8 @@ func process(data format.LogParts, received time.Time) {
 		log.Error().Msg(fmt.Sprintf("Error processing timestamp: %v", err))
 		return
 	}
-	log.Info().Msg(fmt.Sprintf("Processing data for printer %s with timestamp %d", mac, timestamp))
-	processMessage(data, timestamp)
+	log.Debug().Msg(fmt.Sprintf("Processing data for printer %s with timestamp %d", mac, timestamp))
+	processMessage(data["message"].(string), timestamp)
 }
 
 // processTimestamp returns the MAC address and timestamp from the ingested data
@@ -80,16 +81,28 @@ func processTimestamp(data format.LogParts, received time.Time) (string, int64, 
 	} else {
 		log.Debug().Msg("Not the timestamp recorded for printer " + mac)
 		state.LastDelta = timedelta
-		return mac, state.FirstTimestamp, nil
+		return mac, state.FirstTimestamp + timedelta, nil
 	}
 	return mac, timestamp, nil
 }
 
-func processMessage(data format.LogParts, timestamp int64) ([]string, error) {
-	message, ok := data["message"].(string)
-	if !ok {
-		return nil, fmt.Errorf("message is not a string")
+func processMessage(message string, timestamp int64) ([]string, error) {
+	messageSplit := strings.Split(message, "\n")
+
+	// leaving first message for later :shrug:
+	messageSplit = messageSplit[1:]
+
+	for i, line := range messageSplit {
+		splitted := strings.Split(line, " ")
+		delta, err := strconv.ParseInt(splitted[len(splitted)-1], 10, 64)
+		if err != nil {
+			log.Error().Msg("Expected error while parsing time delta for metric: " + splitted[0] + " error:" + err.Error())
+			continue
+		}
+		splitted[len(splitted)-1] = strconv.FormatInt(timestamp+delta, 10)
+		log.Debug().Msg("Processing timestamps for " + message)
+		messageSplit[i] = strings.Join(splitted, " ")
 	}
-	messageSplit := []string{message}
+
 	return messageSplit, nil
 }
