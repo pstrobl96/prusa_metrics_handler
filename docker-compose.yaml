@@ -58,5 +58,5 @@ services:
     networks:
       - prusa
     volumes:
-      - ./docker-grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./docs/config/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - grafana_data:/var/lib/grafana
