@@ -32,7 +32,31 @@ func MetricsListener(listenUDP string, influxURL string, influxToken string, inf
 			received := time.Now()
 			log.Trace().Msg(fmt.Sprintf("%v", logParts))
 
-			process(logParts, received)
+			message, err := process(logParts, received)
+
+			if err != nil {
+				log.Error().Msg(fmt.Sprintf("Error processing message: %v", err))
+				continue
+			}
+
+			result, err := sentToInflux(message, writeAPI)
+
+			if err != nil {
+				log.Error().Msg(fmt.Sprintf("Error sending to InfluxDB: %v", err))
+				continue
+			}
+
+			if result {
+				log.Info().Msg("Metrics sent to InfluxDB")
+			}
+
+			/*
+				if influx {
+					sentToInflux(message, writeAPI)
+				} else {
+					sentOtlp(message)
+				}
+			*/
 		}
 	}(channel)
 

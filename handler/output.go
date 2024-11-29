@@ -13,6 +13,10 @@ var (
 	writeAPI api.WriteAPIBlocking
 )
 
+func sentOtlp(message []string) {
+	log.Trace().Msg("Sending to OTLP")
+}
+
 func sentToInflux(message []string, writeAPI api.WriteAPIBlocking) (result bool, err error) {
 	log.Trace().Msg("Sending to InfluxDB")
 

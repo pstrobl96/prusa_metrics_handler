@@ -31,20 +31,19 @@ type PrinterMetric struct {
 	Labels      map[string]string
 }
 
-func process(data format.LogParts, received time.Time) {
+func process(data format.LogParts, received time.Time) ([]string, error) {
 	mac, timestamp, err := processTimestamp(data, received)
 	if err != nil {
 		log.Error().Msg(fmt.Sprintf("Error processing timestamp: %v", err))
-		return
+		return nil, err
 	}
 	log.Debug().Msg(fmt.Sprintf("Processing data for printer %s with timestamp %d", mac, timestamp))
 	metrics, err := processMessage(data["message"].(string), timestamp)
 	if err != nil {
 		log.Error().Msg(fmt.Sprintf("Error processing message: %v", err))
-		return
+		return nil, err
 	}
-
-	sentToInflux(metrics, writeAPI)
+	return metrics, nil
 }
 
 // processTimestamp returns the MAC address and timestamp from the ingested data
@@ -130,4 +129,8 @@ func parseFirstMessage(message string) (string, error) {
 	}
 	firstMsg := splitted[1:]
 	return strings.Join(firstMsg, " "), nil
+}
+
+func influxToOtlp(message []string) (result bool, err error) {
+	return false, nil
 }
