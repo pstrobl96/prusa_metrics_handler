@@ -39,15 +39,11 @@ func MetricsListener(listenUDP string, influxURL string, influxToken string, inf
 				continue
 			}
 
-			result, err := sentToInflux(message, writeAPI)
+			err = sentToInflux(message, writeAPI)
 
 			if err != nil {
 				log.Error().Msg(fmt.Sprintf("Error sending to InfluxDB: %v", err))
 				continue
-			}
-
-			if result {
-				log.Info().Msg("Metrics sent to InfluxDB")
 			}
 
 			/*

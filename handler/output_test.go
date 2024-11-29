@@ -65,8 +65,8 @@ func TestSentToInflux(t *testing.T) {
 				writeRecordFunc: tt.writeRecord,
 			}
 
-			result, err := sentToInflux(tt.message, mockAPI)
-			assert.Equal(t, tt.expected, result)
+			err := sentToInflux(tt.message, mockAPI)
+			assert.Equal(t, tt.expected, err == nil)
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
