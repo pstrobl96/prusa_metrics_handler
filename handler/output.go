@@ -19,7 +19,7 @@ func sentToInflux(message []string, writeAPI api.WriteAPIBlocking) (result bool,
 	for _, line := range message {
 		err = writeAPI.WriteRecord(context.Background(), line)
 		if err != nil {
-			log.Trace().Err(err).Msg("Error while sending to InfluxDB")
+			log.Error().Err(err).Msg("Error while sending to InfluxDB")
 			return false, err
 		}
 	}

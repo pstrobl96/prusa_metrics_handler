@@ -74,7 +74,7 @@ func processTimestamp(data format.LogParts, received time.Time) (string, int64, 
 	}
 
 	timedelta := tmValue
-	timestamp := time.Now().UnixNano()
+	var timestamp int64
 	printerInterface, _ := printerStates.LoadOrStore(mac, &PrinterStatus{})
 	state := printerInterface.(*PrinterStatus)
 	state.mutex.Lock()
