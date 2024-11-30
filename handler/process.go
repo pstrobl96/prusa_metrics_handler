@@ -130,7 +130,3 @@ func parseFirstMessage(message string) (string, error) {
 	firstMsg := splitted[1:]
 	return strings.Join(firstMsg, " "), nil
 }
-
-func influxToOtlp(message []string) (result bool, err error) {
-	return false, nil
-}
