@@ -9,7 +9,7 @@ networks:
 
 services:
   prusa_metrics_handler:
-    image: pubeldev/prusa_metrics_handler:latest
+    build: .
     container_name: metrics_handler
     restart: unless-stopped
     command: 
@@ -26,10 +26,12 @@ services:
 
   prometheus:
     image: prom/prometheus:v3.0.1
+    container_name: prometheus
     restart: always
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+      -  --web.enable-otlp-receiver
     volumes:
       - ./docs/config/prometheus.yaml:/etc/prometheus/prometheus.yml
       - ./prometheus/:/etc/prometheus/
@@ -37,12 +39,13 @@ services:
       - pubel
 
   otel-collector:
-    image: otel/opentelemetry-collector:0.114.0
+    image: otel/opentelemetry-collector-contrib:0.114.0
     container_name: otel-collector
     restart: always
-    command: ["--config=/etc/otel-collector-config.yaml", "${OTELCOL_ARGS}"]
+    command: 
+      - "--config=/etc/otel-collector-config.yaml"
     volumes:
-      - ./docs/config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      - ./docs/config/otel-collector.yaml:/etc/otel-collector-config.yaml
     depends_on:
       - prometheus
     networks:
