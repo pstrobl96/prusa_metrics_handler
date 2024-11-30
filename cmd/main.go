@@ -35,7 +35,7 @@ func Run() {
 	zerolog.SetGlobalLevel(logLevel)
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixNano
 
-	log.Info().Msg("Syslog logs server starting at: " + *syslogListenAddress)
+	log.Info().Msg("Syslog metrics server starting at: " + *syslogListenAddress)
 	go handler.MetricsListener(*syslogListenAddress, *influxURL, *influxToken, *influxBucket, *influxOrg)
 
 	http.Handle(*metricsPath, promhttp.Handler())
