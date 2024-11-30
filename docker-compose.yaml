@@ -12,10 +12,11 @@ services:
     container_name: metrics_handler
     restart: unless-stopped
     command: 
-      - "--influx-url=http://otel-collector:8086"
-      - "--influx-org=pubeldev"
-      - "--influx-bucket=prusa"
-      - "--influx-token=null"
+      - "--influx.url=http://otel-collector:8086"
+      - "--influx.org=pubeldev"
+      - "--influx.bucket=prusa"
+      - "--influx.token=null"
+      - "--influx.enabled"
     ports:
       - 8514:8514/udp # UDP for metrics - I could tell you a joke about UDP, but you might not get it
     depends_on:
@@ -30,7 +31,8 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
-      -  --web.enable-otlp-receiver
+      - '--web.enable-otlp-receiver'
+      - '--web.remote-write-receiver.accepted-protobuf-messages'
     volumes:
       - ./docs/config/prometheus.yaml:/etc/prometheus/prometheus.yml
       - prometheus_data:/etc/prometheus/

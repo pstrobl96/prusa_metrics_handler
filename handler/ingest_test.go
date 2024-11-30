@@ -25,12 +25,9 @@ func TestStartSyslogServer(t *testing.T) {
 
 func TestMetricsListener(t *testing.T) {
 	listenUDP := "localhost:514"
-	influxURL := "http://localhost:8086"
-	influxToken := "my-token"
-	influxBucket := "my-bucket"
-	influxOrg := "my-org"
+	prefix := "pubel_"
 
-	go MetricsListener(listenUDP, influxURL, influxToken, influxBucket, influxOrg)
+	go MetricsListener(listenUDP, prefix)
 
 	time.Sleep(1 * time.Second)
 

@@ -5,6 +5,8 @@ receivers:
 exporters:
   otlphttp:
     metrics_endpoint: "http://prometheus:9090/api/v1/otlp/v1/metrics"
+  prometheusremotewrite:
+    endpoint: "https://prometheus:9090/api/v1/push"
 
 processors:
   batch:
@@ -14,4 +16,4 @@ service:
     metrics:
       receivers: [influxdb]
       processors: [batch]
-      exporters: [otlphttp]
+      exporters: [prometheusremotewrite]

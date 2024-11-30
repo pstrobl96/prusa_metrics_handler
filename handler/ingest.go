@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-
 	"github.com/rs/zerolog/log"
 	"gopkg.in/mcuadros/go-syslog.v2"
 )
 
-func startSyslogServer(listenUDP string) (syslog.LogPartsChannel, *syslog.Server) {
+// StartSyslogServer starts a custom syslog server and returns the channel and server
+func StartSyslogServer(listenUDP string) (syslog.LogPartsChannel, *syslog.Server) {
 	channel := make(syslog.LogPartsChannel)
 	handler := syslog.NewChannelHandler(channel)
 	server := syslog.NewServer()
@@ -22,24 +21,22 @@ func startSyslogServer(listenUDP string) (syslog.LogPartsChannel, *syslog.Server
 }
 
 // MetricsListener is a function to handle syslog metrics and sent them to processor
-func MetricsListener(listenUDP string, influxURL string, influxToken string, influxBucket string, influxOrg string) {
-	client = influxdb2.NewClient(influxURL, influxToken)
-	writeAPI = client.WriteAPIBlocking(influxOrg, influxBucket)
-	channel, server := startSyslogServer(listenUDP)
+func MetricsListener(listenUDP string, prefix string) {
+	channel, server := StartSyslogServer(listenUDP)
 
 	go func(channel syslog.LogPartsChannel) {
 		for logParts := range channel {
 			received := time.Now()
 			log.Trace().Msg(fmt.Sprintf("%v", logParts))
 
-			message, err := process(logParts, received)
+			message, err := Process(logParts, received, prefix)
 
 			if err != nil {
 				log.Error().Msg(fmt.Sprintf("Error processing message: %v", err))
 				continue
 			}
 
-			err = sentToInflux(message, writeAPI)
+			err = SentToInflux(message, writeAPI)
 
 			if err != nil {
 				log.Error().Msg(fmt.Sprintf("Error sending to InfluxDB: %v", err))
