@@ -4,11 +4,7 @@ receivers:
 
 exporters:
   otlphttp:
-    endpoint: prometheus:4318 
-  prometheus:
-    endpoint: "0.0.0.0:8889"
-    const_labels:
-      label1: value1
+    metrics_endpoint: "http://prometheus:9090/api/v1/otlp/v1/metrics"
 
 processors:
   batch:
@@ -18,4 +14,4 @@ service:
     metrics:
       receivers: [influxdb]
       processors: [batch]
-      exporters: [otlphttp, prometheus]
+      exporters: [otlphttp]

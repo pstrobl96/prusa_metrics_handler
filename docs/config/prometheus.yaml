@@ -15,7 +15,6 @@ scrape_configs:
     static_configs:
       - targets: ["metrics_handler:10011"]
 
-
 otlp:
   promote_resource_attributes:
     - service.instance.id

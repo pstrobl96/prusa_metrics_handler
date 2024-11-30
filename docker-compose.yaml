@@ -1,7 +1,6 @@
 
 volumes:
   grafana_data:
-  mimir_data:
   prometheus_data:
   
 networks:
@@ -34,7 +33,7 @@ services:
       -  --web.enable-otlp-receiver
     volumes:
       - ./docs/config/prometheus.yaml:/etc/prometheus/prometheus.yml
-      - ./prometheus/:/etc/prometheus/
+      - prometheus_data:/etc/prometheus/
     networks:
       - pubel
 
