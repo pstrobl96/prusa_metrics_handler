@@ -22,15 +22,6 @@ type PrinterStatus struct {
 
 var printerStates sync.Map
 
-// PrinterMetric is a structure to hold printer metrics
-type PrinterMetric struct {
-	Mac         string
-	Timestamp   int64
-	MetricName  string
-	MetricValue float64
-	Labels      map[string]string
-}
-
 func process(data format.LogParts, received time.Time) ([]string, error) {
 	mac, timestamp, err := processTimestamp(data, received)
 	if err != nil {
@@ -38,7 +29,7 @@ func process(data format.LogParts, received time.Time) ([]string, error) {
 		return nil, err
 	}
 	log.Debug().Msg(fmt.Sprintf("Processing data for printer %s with timestamp %d", mac, timestamp))
-	metrics, err := processMessage(data["message"].(string), timestamp)
+	metrics, err := processMessage(data["message"].(string), timestamp, mac)
 	if err != nil {
 		log.Error().Msg(fmt.Sprintf("Error processing message: %v", err))
 		return nil, err
@@ -92,7 +83,7 @@ func processTimestamp(data format.LogParts, received time.Time) (string, int64, 
 	return mac, timestamp, nil
 }
 
-func processMessage(message string, timestamp int64) ([]string, error) {
+func processMessage(message string, timestamp int64, mac string) ([]string, error) {
 	messageSplit := strings.Split(message, "\n")
 
 	if len(messageSplit) == 0 {
@@ -116,7 +107,13 @@ func processMessage(message string, timestamp int64) ([]string, error) {
 		}
 		splitted[len(splitted)-1] = strconv.FormatInt(timestamp+delta, 10)
 		log.Debug().Msg("Processing timestamps for " + message)
+		splitted, err = addMacLabel(mac, splitted)
+		if err != nil {
+			log.Error().Msg("Expected error while adding mac label for metric: " + splitted[0] + " error:" + err.Error())
+			continue
+		}
 		messageSplit[i] = strings.Join(splitted, " ")
+
 	}
 	prometheus.MetricsHandlerTotal.Inc()
 	return messageSplit, nil
@@ -129,4 +126,13 @@ func parseFirstMessage(message string) (string, error) {
 	}
 	firstMsg := splitted[1:]
 	return strings.Join(firstMsg, " "), nil
+}
+
+func addMacLabel(mac string, splitted []string) ([]string, error) {
+	if len(splitted) == 0 {
+		return nil, fmt.Errorf("splitted message is empty")
+	}
+	splitted[0] = fmt.Sprintf("%s,mac=%s", splitted[0], mac)
+
+	return splitted, nil
 }
