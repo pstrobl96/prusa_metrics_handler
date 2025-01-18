@@ -8,8 +8,7 @@ import (
 	"gopkg.in/mcuadros/go-syslog.v2"
 )
 
-// StartSyslogServer starts a custom syslog server and returns the channel and server
-func StartSyslogServer(listenUDP string) (syslog.LogPartsChannel, *syslog.Server) {
+func startSyslogServer(listenUDP string) (syslog.LogPartsChannel, *syslog.Server) {
 	channel := make(syslog.LogPartsChannel)
 	handler := syslog.NewChannelHandler(channel)
 	server := syslog.NewServer()
@@ -22,7 +21,7 @@ func StartSyslogServer(listenUDP string) (syslog.LogPartsChannel, *syslog.Server
 
 // MetricsListener is a function to handle syslog metrics and sent them to processor
 func MetricsListener(listenUDP string, prefix string) {
-	channel, server := StartSyslogServer(listenUDP)
+	channel, server := startSyslogServer(listenUDP)
 
 	go func(channel syslog.LogPartsChannel) {
 		for logParts := range channel {

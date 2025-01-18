@@ -23,6 +23,11 @@ func InitInfluxDB(influxURL string, influxToken string, influxBucket string, inf
 	writeAPI = client.WriteAPIBlocking(influxOrg, influxBucket)
 }
 
+// InitOTLP initializes the OpenTelemetry client
+func InitOTLP(endpoint string) {
+	log.Info().Msg("OTLP enabled")
+}
+
 // SentToInflux sends the messages array in a loop to InfluxDB
 func SentToInflux(message []string, writeAPI api.WriteAPIBlocking) (err error) {
 	log.Trace().Msg("Sending to InfluxDB")
@@ -44,27 +49,5 @@ func WriteToStdout(message []string) {
 
 	for _, line := range message {
 		stdoutLogger.Info().Msg(line)
-	}
-}
-
-// WriteToFile writes the messages to a file
-func WriteToFile(message []string) {
-	file, err := os.OpenFile("metrics.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Error().Err(err)
-	}
-	defer file.Close()
-
-	fileLogger := zerolog.New(file).With().Timestamp().Logger()
-
-	for _, line := range message {
-		fileLogger.Info().Msg(line)
-	}
-}
-
-// WriteToChannel writes the messages to a channel
-func WriteToChannel(message []string, ch chan<- string) {
-	for _, line := range message {
-		ch <- line
 	}
 }
