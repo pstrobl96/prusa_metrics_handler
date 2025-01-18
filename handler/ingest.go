@@ -32,7 +32,7 @@ func MetricsListener(listenUDP string, influxURL string, influxToken string, inf
 			received := time.Now()
 			log.Trace().Msg(fmt.Sprintf("%v", logParts))
 
-			process(logParts, received)
+			process(logParts, received, "prusa")
 		}
 	}(channel)
 
