@@ -60,7 +60,7 @@ func processTimestamp(data format.LogParts, received time.Time) (string, string,
 		return "", "", 0, fmt.Errorf("message is not an string")
 	}
 
-	ip, ok := data["address"].(string)
+	ip, ok := data["client"].(string)
 	if !ok {
 		return "", "", 0, fmt.Errorf("ip is not an string")
 	}
