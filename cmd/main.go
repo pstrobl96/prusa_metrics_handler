@@ -20,6 +20,7 @@ var (
 	influxToken         = kingpin.Flag("influx-token", "Token for influx").Default("loremipsumdolorsitmaet").String()
 	influxURL           = kingpin.Flag("influx-url", "url for influx").Default("http://localhost:8086").String()
 	logLevel            = kingpin.Flag("log.level", "Log level for prusa_metrics_handler.").Default("info").String()
+	prefix              = kingpin.Flag("prefix", "Prefix for metrics").Default("prusa_").String()
 )
 
 // Run function to start the metrics handler
@@ -36,7 +37,7 @@ func Run() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixNano
 
 	log.Info().Msg("Syslog logs server starting at: " + *syslogListenAddress)
-	go handler.MetricsListener(*syslogListenAddress, *influxURL, *influxToken, *influxBucket, *influxOrg)
+	go handler.MetricsListener(*syslogListenAddress, *influxURL, *influxToken, *influxBucket, *influxOrg, *prefix)
 
 	http.Handle(*metricsPath, promhttp.Handler())
 	http.ListenAndServe(":"+strconv.Itoa(*metricsPort), nil)
