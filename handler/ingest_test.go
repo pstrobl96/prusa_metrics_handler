@@ -29,8 +29,9 @@ func TestMetricsListener(t *testing.T) {
 	influxToken := "my-token"
 	influxBucket := "my-bucket"
 	influxOrg := "my-org"
+	prefix := "prusa_"
 
-	go MetricsListener(listenUDP, influxURL, influxToken, influxBucket, influxOrg)
+	go MetricsListener(listenUDP, influxURL, influxToken, influxBucket, influxOrg, prefix)
 
 	time.Sleep(1 * time.Second)
 
