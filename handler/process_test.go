@@ -12,6 +12,7 @@ func TestProcess(t *testing.T) {
 		name     string
 		data     format.LogParts
 		received time.Time
+		client   string
 		wantErr  bool
 	}{
 		{
@@ -20,6 +21,7 @@ func TestProcess(t *testing.T) {
 				"hostname": "00:11:22:33:44:55",
 				"message":  "tm=123456 metric1 10 metric2 20",
 			},
+			client:   "192.216.21.1:3233",
 			received: time.Now(),
 			wantErr:  false,
 		},
@@ -29,6 +31,7 @@ func TestProcess(t *testing.T) {
 				"hostname": 12345,
 				"message":  "tm=123456 metric1 10 metric2 20",
 			},
+			client:   "192.216.21.1:3233",
 			received: time.Now(),
 			wantErr:  true,
 		},
@@ -38,6 +41,7 @@ func TestProcess(t *testing.T) {
 				"hostname": "00:11:22:33:44:55",
 				"message":  12345,
 			},
+			client:   "192.216.21.1:3233",
 			received: time.Now(),
 			wantErr:  true,
 		},
@@ -47,8 +51,19 @@ func TestProcess(t *testing.T) {
 				"hostname": "00:11:22:33:44:55",
 				"message":  "metric1 10 metric2 20",
 			},
+			client:   "192.216.21.1:3233",
 			received: time.Now(),
 			wantErr:  true,
+		},
+		{
+			name: "Invalid client",
+			data: format.LogParts{
+				"hostname": "00:11:22:33:44:55",
+				"message":  "tm=123456 metric1 10 metric2 20",
+			},
+			client:   "",
+			received: time.Now(),
+			wantErr:  false,
 		},
 	}
 
@@ -62,7 +77,7 @@ func TestProcess(t *testing.T) {
 				}
 			}()
 
-			process(tt.data, tt.received)
+			process(tt.data, tt.received, tt.client)
 		})
 	}
 }

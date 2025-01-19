@@ -22,7 +22,7 @@ func startSyslogServer(listenUDP string) (syslog.LogPartsChannel, *syslog.Server
 }
 
 // MetricsListener is a function to handle syslog metrics and sent them to processor
-func MetricsListener(listenUDP string, influxURL string, influxToken string, influxBucket string, influxOrg string) {
+func MetricsListener(listenUDP string, influxURL string, influxToken string, influxBucket string, influxOrg string, prefix string) {
 	client = influxdb2.NewClient(influxURL, influxToken)
 	writeAPI = client.WriteAPIBlocking(influxOrg, influxBucket)
 	channel, server := startSyslogServer(listenUDP)
@@ -32,7 +32,7 @@ func MetricsListener(listenUDP string, influxURL string, influxToken string, inf
 			received := time.Now()
 			log.Trace().Msg(fmt.Sprintf("%v", logParts))
 
-			process(logParts, received)
+			process(logParts, received, prefix)
 		}
 	}(channel)
 
