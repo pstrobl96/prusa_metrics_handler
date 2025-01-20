@@ -74,30 +74,30 @@ func processTimestamp(data format.LogParts, received time.Time) (string, string,
 		}
 	}
 	tmValue, err := strconv.ParseInt(matches[0][1], 10, 64)
-	fmt.Println("tmValue: ", tmValue)
+	log.Trace().Msg("tmValue: " + strconv.FormatInt(tmValue, 10))
 	if err != nil {
 		return "", "", 0, fmt.Errorf("time delta cannot be converted to int64")
 	}
-
-	printerInterface, _ := printerStates.LoadOrStore(mac, &PrinterStatus{})
-	state := printerInterface.(*PrinterStatus)
-	state.mutex.Lock()
-	timedelta := tmValue * 1000 // for how long printer is running
-	timestamp := state.FirstTimestamp + timedelta
-	defer state.mutex.Unlock()
-	if state.FirstTimestamp == 0 {
-		log.Debug().Msg("First timestamp recorded for printer: " + mac)
-		timestamp = received.Add(-time.Duration(timedelta)).UnixNano()
-	} else if state.LastDelta > timedelta {
-		log.Info().Msg("Printer: " + mac + " restarted")
-		log.Debug().Msg("Restarting delta")
-		timestamp = received.Add(-time.Duration(timedelta)).UnixNano()
-	} else {
-		log.Debug().Msg("Timestamp found for: " + mac)
-	}
-	state.FirstTimestamp = timestamp
-	state.LastDelta = timedelta
-	return mac, ip, timestamp, nil
+	/*
+		printerInterface, _ := printerStates.LoadOrStore(mac, &PrinterStatus{})
+		state := printerInterface.(*PrinterStatus)
+		state.mutex.Lock()
+		timedelta := tmValue // for how long printer is running
+		timestamp := state.FirstTimestamp + timedelta
+		defer state.mutex.Unlock()
+		if state.FirstTimestamp == 0 {
+			log.Debug().Msg("First timestamp recorded for printer: " + mac)
+			timestamp = received.Add(-time.Duration(timedelta)).UnixNano()
+		} else if state.LastDelta > timedelta {
+			log.Info().Msg("Printer: " + mac + " restarted")
+			log.Debug().Msg("Restarting delta")
+			timestamp = received.Add(-time.Duration(timedelta)).UnixNano()
+		} else {
+			log.Debug().Msg("Timestamp found for: " + mac)
+		}
+		state.FirstTimestamp = timestamp
+		state.LastDelta = timedelta*/
+	return mac, ip, received.UnixNano(), nil
 }
 
 func processMessage(message string, timestamp int64, mac string, prefix string, ip string) ([]string, error) {
